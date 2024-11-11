@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: springboot-app
-          image: springboot-app:latest  # Replace with your actual image tag
+          image: lahham666/freightous-task  # Replace with your actual image tag
       imagePullSecrets:
         - name: docker-cred
           env:
