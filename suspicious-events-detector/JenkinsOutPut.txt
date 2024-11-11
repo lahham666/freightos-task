@@ -1,0 +1,131 @@
+Started by user Ahmed
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /var/lib/jenkins/workspace/jenkins-fre
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Clone Repository)
+[Pipeline] git
+The recommended git tool is: NONE
+No credentials specified
+ > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/jenkins-fre/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/lahham666/freightos-task.git # timeout=10
+Fetching upstream changes from https://github.com/lahham666/freightos-task.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.34.1'
+ > git fetch --tags --force --progress -- https://github.com/lahham666/freightos-task.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision 51f7b1cbc783ffbff4f676880a8f189dc960a808 (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 51f7b1cbc783ffbff4f676880a8f189dc960a808 # timeout=10
+ > git branch -a -v --no-abbrev # timeout=10
+ > git branch -D main # timeout=10
+ > git checkout -b main 51f7b1cbc783ffbff4f676880a8f189dc960a808 # timeout=10
+Commit message: "Update deployments.yaml"
+ > git rev-list --no-walk afa5d129b2d3f31e27801fe6b90e8d647bb48a56 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Navigate to Directory and Build Docker Image)
+[Pipeline] dir
+Running in /var/lib/jenkins/workspace/jenkins-fre/suspicious-events-detector
+[Pipeline] {
+[Pipeline] sh
++ docker build -t lahham666/freightous-task .
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 608B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/maven:3.6.3-jdk-8
+#2 DONE 0.1s
+
+#3 [internal] load metadata for docker.io/library/openjdk:8-jdk-alpine
+#3 DONE 0.1s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 2B done
+#4 DONE 0.0s
+
+#5 [build 1/5] FROM docker.io/library/maven:3.6.3-jdk-8@sha256:ac624d39dd0b7bed827d4b0d1bbaeb457012e0cba0fb6c53ce34b00bed16ec08
+#5 DONE 0.0s
+
+#6 [stage-1 1/3] FROM docker.io/library/openjdk:8-jdk-alpine@sha256:94792824df2df33402f201713f932b58cb9de94a0cd524164a0f2283343547b3
+#6 DONE 0.0s
+
+#7 [internal] load build context
+#7 transferring context: 2.08kB done
+#7 DONE 0.0s
+
+#8 [stage-1 2/3] WORKDIR /app
+#8 CACHED
+
+#9 [build 4/5] COPY src ./src
+#9 CACHED
+
+#10 [build 5/5] RUN mvn clean package -DskipTests
+#10 CACHED
+
+#11 [build 2/5] WORKDIR /app
+#11 CACHED
+
+#12 [build 3/5] COPY pom.xml ./
+#12 CACHED
+
+#13 [stage-1 3/3] COPY --from=build /app/target/*.jar app.jar
+#13 CACHED
+
+#14 exporting to image
+#14 exporting layers done
+#14 writing image sha256:6f4878fe5d346025ced10e20cb5655b210a97b573f2a33bf6ed9abd29a65fc7b done
+#14 naming to docker.io/lahham666/freightous-task done
+#14 DONE 0.0s
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Push Docker Image to Docker Hub)
+[Pipeline] withCredentials
+Masking supported pattern matches of $DOCKER_PASSWORD
+[Pipeline] {
+[Pipeline] sh
++ echo ****
++ docker login -u lahham666 --password-stdin
+WARNING! Your password will be stored unencrypted in /var/lib/jenkins/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credential-stores
+
+Login Succeeded
++ docker push lahham666/freightous-task
+Using default tag: latest
+The push refers to repository [docker.io/lahham666/freightous-task]
+87316e3d25d1: Preparing
+e8d0b516ecbd: Preparing
+ceaf9e1ebef5: Preparing
+9b9b7f3d56a0: Preparing
+f1b5933fe4b5: Preparing
+f1b5933fe4b5: Layer already exists
+ceaf9e1ebef5: Layer already exists
+e8d0b516ecbd: Layer already exists
+9b9b7f3d56a0: Layer already exists
+87316e3d25d1: Layer already exists
+latest: digest: sha256:cb5ad0d7aa07ebdab0a3abdd3fffd3a7970e2463f43fa2d843d54a10f21b0850 size: 1365
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Deploy to Kubernetes)
+[Pipeline] sh
++ kubectl apply -f suspicious-events-detector/deployments.yaml
+deployment.apps/springboot-app configured
+service/springboot-app-service unchanged
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS
