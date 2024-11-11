@@ -15,8 +15,6 @@ spec:
       containers:
         - name: springboot-app
           image: lahham666/freightous-task  # Replace with your actual image tag
-      imagePullSecrets:
-        - name: docker-cred
           env:
             - name: MYSQL_HOST
               value: "mysql-db"  # MySQL service name
@@ -30,6 +28,9 @@ spec:
               value: "mypass"
           ports:
             - containerPort: 8080  # Assuming the Spring Boot app runs on port 8080
+      imagePullSecrets:
+        - name: docker-cred  # Secret for pulling from DockerHub
+
 ---
 apiVersion: v1
 kind: Service
@@ -42,4 +43,4 @@ spec:
     - protocol: TCP
       port: 80       # Expose the service on port 80
       targetPort: 8080  # Map it to the container's port 8080
-  type: LoadBalancer   # You can use ClusterIP or NodePort if LoadBalancer is not available
+  type: NodePort  # Use NodePort for Minikube instead of LoadBalancer
