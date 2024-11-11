@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                // Clone the repository from the main branch
+                git branch: 'main', url: 'https://github.com/lahham666/freightos-task.git'
+            }
+        }
+
+        stage('Navigate to Directory and Build Docker Image') {
+            steps {
+                // Navigate to the specified directory and build the Docker image for Spring Boot app
+                dir('/var/lib/jenkins/workspace/jenkins-fre/suspicious-events-detector') {
+                    sh 'docker build -t lahham666/freightous-task .'
+                }
+            }
+        }
+
+        stage('Push Docker Image to Docker Hub') {
+            steps {
+                // Use Docker Hub credentials from Jenkins credentials store
+                withCredentials([usernamePassword(credentialsId: 'docker-cred', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    // Login to Docker Hub
+                    sh '''
+                        echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+                        docker push lahham666/freightous-task
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                // Use Kubernetes credentials from Jenkins or set kubeconfig
+                sh 'kubectl apply -f suspicious-events-detector/deployments.yaml'
+                
+            }
+        }
+    }
+}
