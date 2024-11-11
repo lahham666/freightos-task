@@ -15,9 +15,9 @@ spec:
       containers:
         - name: springboot-app
           image: lahham666/freightous-task  # Replace with your actual image tag
-          envfrom:
+          envFrom:
             - configMapRef:
-                name: db-config 
+                name: db-config  # Referencing the ConfigMap for environment variables
           ports:
             - containerPort: 8080  # Assuming the Spring Boot app runs on port 8080
       imagePullSecrets:
