@@ -15,17 +15,9 @@ spec:
       containers:
         - name: springboot-app
           image: lahham666/freightous-task  # Replace with your actual image tag
-          env:
-            - name: MYSQL_HOST
-              value: "mysql-db"  # MySQL service name
-            - name: MYSQL_PORT
-              value: "3306"
-            - name: MYSQL_DATABASE
-              value: "mydb"
-            - name: MYSQL_USERNAME
-              value: "myuser"
-            - name: MYSQL_PASSWORD
-              value: "mypass"
+          envfrom:
+            - configMapRef:
+                name: db-config 
           ports:
             - containerPort: 8080  # Assuming the Spring Boot app runs on port 8080
       imagePullSecrets:
